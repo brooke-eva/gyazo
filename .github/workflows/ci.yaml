@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  checks:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: taiki-e/install-action@just
+    - uses: taiki-e/install-action@cargo-binstall
+    - uses: taiki-e/install-action@cargo-shear
+    # - uses: taiki-e/install-action@cargo-upgrades
+    - name: Lint
+      run: just lint
