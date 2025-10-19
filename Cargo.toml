@@ -1,7 +1,7 @@
 [package]
 name = "gyazo"
 version = "0.0.0"
-description = "Client library and CLI for Gyazo"
+description = "Better Gyazo for Linux"
 edition = "2024"
 authors = ["Brooke Eva"]
 license = "MIT"
@@ -18,23 +18,30 @@ required-features = ["cli"]
 async-stream = "0.3"
 dirs = "6"
 futures-util = "0.3"
+# hex = "0.4"
 http = "1"
 open = "5"
+# md-5 = "0.10"
 reqwest = { version = "0.12", default-features = false, features = ["json", "multipart", "rustls-tls", "stream"] }
 serde = "1"
 serde_json = "1"
 tempfile = "3"
 thiserror = "2"
 toml = "0.9"
+url = "2"
 
-clap = { version = "4", features = ["derive"], optional = true }
+clap = { version = "4", features = ["derive", "env", "string"], optional = true }
+color-eyre = { version = "0.6", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
 
 [features]
-cli = ["dep:clap", "dep:tokio"]
+cli = ["dep:clap", "dep:color-eyre", "dep:tokio"]
 
 [profile.release]
 strip = true
 # minor difference to default "s" (speed)
 # opt-level = "z"
 lto = true
+
+[profile.dev.package.backtrace]
+opt-level = 3

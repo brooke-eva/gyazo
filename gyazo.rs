@@ -1,6 +1,8 @@
-use gyazo::{Result, cli::Gyazo};
+use gyazo::cli::Gyazo;
 
 #[tokio::main]
-async fn main() -> Result<()> {
-    Gyazo::new().run().await
+async fn main() -> color_eyre::eyre::Result<()> {
+    color_eyre::install()?;
+    Gyazo::new().run().await?;
+    Ok(())
 }

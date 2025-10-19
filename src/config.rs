@@ -4,8 +4,15 @@ use crate::Result;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Config {
+    /// Extracted `Gyazo_session` cookie for internal APIs
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub access_token: Option<String>,
+    pub cookie: Option<String>,
+    /// One of the "linked device" IDs
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device: Option<String>,
+    /// An app's access token
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
     #[serde(default, skip_serializing_if = "Upload::is_default")]
     pub upload: Upload,
 }
@@ -42,9 +49,38 @@ impl Config {
         Ok(())
     }
 
+    // pub fn is_linked(&self) -> bool {
+    //     self.device.is_some()
+    // }
+
+    // https://docs.rs/dirs/latest/dirs/fn.config_dir.html
+    // https://codeberg.org/dirs/dirs-rs/src/branch/main/src/lib.rs
     pub fn dir() -> PathBuf {
         dirs::config_dir().unwrap()
     }
+
+    // #[cfg(target_os = "macos")]
+    // pub fn dir() -> PathBuf {
+    //     let mut path = std::env::home_dir().unwrap();
+    //     path.push("Library");
+    //     path.push("Application Support");
+    //     path
+    // }
+    //
+    // #[cfg(target_os = "windows")]
+    // pub fn dir() -> PathBuf {
+    //     let mut path = std::env::home_dir().unwrap();
+    //     path.push("AppData");
+    //     path.push("Roaming");
+    //     path
+    // }
+    //
+    // #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    // pub fn dir() -> PathBuf {
+    //     let mut path = std::env::home_dir().unwrap();
+    //     path.push(".config");
+    //     path
+    // }
 
     fn ensure_dir() {
         fs::create_dir_all(Self::dir()).ok();
