@@ -17,6 +17,7 @@ required-features = ["cli"]
 [dependencies]
 async-stream = "0.3"
 dirs = "6"
+# eframe = "0.32"
 futures-util = "0.3"
 # hex = "0.4"
 http = "1"

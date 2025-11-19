@@ -20,6 +20,8 @@ mod config;
 pub use config::Config;
 mod image;
 pub use image::{File, Image};
+// mod gui;
+// pub use gui::Gui;
 
 // pub struct Auth<'a> {
 //     pub id: Option<&'a str>,
@@ -147,6 +149,7 @@ impl Verify for reqwest::Response {
         if status.is_success() {
             return Ok(self);
         }
+        println!("status: {status:?}");
         let status = match status.as_u16() {
             400 => InvalidRequest,
             401 => Unauthenticated,
@@ -162,7 +165,7 @@ impl Verify for reqwest::Response {
             .text()
             .await
             .unwrap_or_else(|_| "TEXT MISSING".to_string());
-        // println!("{text}");
+        println!("{text}");
         Err(Error::Api {
             message: msg.to_string(),
             status,

@@ -69,6 +69,7 @@ pub struct Gyazo {
 // Unclear how to construct a URL to open a browser session for this account.
 #[derive(Debug, Subcommand)]
 pub enum Command {
+    // Gui(crate::Gui),
     Image(Image),
     Video(Video),
     Count(Count),
@@ -117,6 +118,7 @@ impl Gyazo {
         let client = &Client::new(&config);
 
         match self.command {
+            // Gui(cmd) => cmd.run().unwrap(),
             Image(cmd) => cmd.run(client).await?,
             Count(cmd) => cmd.run(client).await?,
             Download(cmd) => cmd.run(client).await?,
@@ -268,16 +270,25 @@ impl Video {
         let xy = it.next().unwrap();
         let wh = it.next().unwrap();
 
+        // the encoder needs height+width divisible by two
+        println!("wh before: {wh}");
+        let (w, h) = wh.split_once('x').unwrap();
+        let w = (w.parse::<u32>().unwrap() / 2) * 2;
+        let h = (h.parse::<u32>().unwrap() / 2) * 2;
+        let wh = format!("{w}x{h}");
+        println!("wh after: {wh}");
+
         // record
         let file = tempfile::NamedTempFile::with_suffix(".mp4")
             .wrap_err("Failed to create a temporary MP4 file")?;
         let path = file.path().to_str().unwrap();
+        println!("path: {path}");
         let seconds = self.seconds.to_string();
         let args = &[
             "-f",
             "x11grab",
             "-s",
-            wh,
+            wh.as_str(),
             "-i",
             xy,
             "-f",
@@ -286,10 +297,18 @@ impl Video {
             "pulse",
             "-t",
             seconds.as_str(),
+            // without this, videos won't play on Windows
+            "-pix_fmt",
+            "yuv420p",
             "-y",
+            // uhh.. Stream #0: not enough frames to estimate rate; consider increasing probesize
+            "-framerate",
+            "24",
+            "-probesize",
+            "64MB",
             path,
         ];
-        // println!("{}", args.join(" "));
+        println!("ffmpeg: {}", args.join(" "));
         println!("Recording for {seconds} seconds");
         process::Command::new("ffmpeg")
             .args(args)
